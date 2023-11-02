@@ -1,0 +1,9 @@
+<!-- pdf-viewer.component.html -->
+<ngx-extended-pdf-viewer [src]="'assets/Test.pdf'"
+[backgroundColor]="'white'"
+[useBrowserLocale]="true"
+[showToolbar]="false"
+[showBorders]="false"
+[(formData)]="formData">
+</ngx-extended-pdf-viewer>
+<button (click)="submitForm()">Submit</button>
