@@ -1,8 +1,31 @@
 // pdf-viewer.component.ts
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { PdfFormDataService } from '../pdf-form-data.service';
 import { NgxExtendedPdfViewerComponent, PagesLoadedEvent } from 'ngx-extended-pdf-viewer';
+import { pdfDefaultOptions } from 'ngx-extended-pdf-viewer';
 
+
+export interface Person{
+  yearsOfExperience: number | string,
+  firstName: string,
+  lastName: string,
+  country: string,
+  jobDescription: string,
+  typeScript: string | boolean,
+  javaScript: string | boolean,
+  java: string | boolean,
+  cSharp: string | boolean,
+  databases: string[],
+  otherJobExperience: string,
+  educationLevel: string,
+}
+
+export interface Contact {
+  firstName: string;
+  lastName: string;
+  emailAddress: string;
+  subject: string;
+  questions: string;
+}
 
 @Component({
   selector: 'app-pdf-viewer',
@@ -10,58 +33,89 @@ import { NgxExtendedPdfViewerComponent, PagesLoadedEvent } from 'ngx-extended-pd
   styleUrls: ['./pdf-viewer.component.css']
 })
 export class PdfViewerComponent {
-  constructor(private pdfFormDataService: PdfFormDataService) {}
-
+  constructor() {
+    pdfDefaultOptions.doubleTapZoomFactor = 'page-actual';
+  }
   pdfUrl: string = 'assets/S.pdf'; // Set the PDF URL here
 
-  public height = '100vh';
 
-  public onPagesLoaded(event: PagesLoadedEvent): void {
-    const h = event.source.viewer.clientHeight;
-    this.height = (h + 35) + 'px';
+showRes : boolean =false;
+
+   ngAfterViewInit(): void {
+    // pdfDefaultOptions.doubleTapZoomFactor = 'page-actual';
+  }
+
+  personData:Person ={
+    firstName: 'Win Myo',
+    lastName: 'Thu',
+    country: 'Spain',
+    otherJobExperience: 'Web Devloper',
+    typeScript: "Yes",
+    yearsOfExperience: 11,
+    jobDescription: 'UX Designer',
+    javaScript: false,
+    java: false,
+    cSharp: false,
+    databases: [ 'oracle'],
+    educationLevel: 'masterDegree'
   }
 
 
 
   async submitForm() {
-
-    // const pdfUrl = this.pdfViewer.src;
-    // console.log(pdfUrl)
-    // const formData = await this.pdfFormDataService.extractFormData(pdfUrl);
-    // console.log('Form Data:', formData);
-
-    // Here you can send the formData to your backend API or process it as needed.
-
-    console.log(this.firstName);
-
-    alert(this.firstName)
+    this.showRes = true;
   }
 
 
-  public firstName = 'Jane';
+ initialized = false;
 
-  public lastName = 'Doe';
-  public country = 'Spain';
-  public jobExperience = '6';
-  public typeScript = true;
+   formData: {
+    [fieldName: string]: string | string[] | number | boolean;
+  } = {};
 
+   delayedUpdateFormData(): void {
+    setTimeout(() => {
+      this.initialized = true;
+      this.updateFormData();
+      console.log('init pdf');
+    });
+  }
 
-
-  public get formData(): { [fieldName: string]: string | number | boolean } {
-    return {
-      firstName: this.firstName,
-      lastName: this.lastName,
-      yearsOfExperience: this.jobExperience,
-      typeScript: this.typeScript,
-      country: this.country
+   updateFormData(): void {
+    console.log('update pdf field')
+    this.formData = {
+      firstName : this.personData.firstName,
+      lastName: this.personData.lastName,
+      country: this.personData.country,
+      jobDescription: this.personData.jobDescription,
+      typeScript: false,
+      javaScript: this.personData.javaScript,
+      java: this.personData.java,
+      cSharp: this.personData.cSharp,
+      databases: this.personData.databases,
+      otherJobExperience: this.personData.otherJobExperience,
+      yearsOfExperience: this.personData.yearsOfExperience,
+      educationLevel: this.personData.educationLevel,
     };
   }
 
-  public set formData(data: { [fieldName: string]: string | number | boolean } | any) {
-    this.firstName = data.firstName as string;
-    this.lastName = data.lastName as string;
-    this.jobExperience = data.yearsOfExperience as string;
-    this.country = data.country as string;
-    this.typeScript = data.typeScript === 'true' || data.typeScript === true;
+   setFormData(data: { [fieldName: string]: string | string[] | number | boolean } | any) {
+    if (this.initialized) {
+      this.personData.firstName = data.firstName as string;
+      this.personData.lastName = data.lastName as string;
+      this.personData.country = data.country as string;
+      this.personData.jobDescription = data.jobDescription as string;
+      this.personData.typeScript = data.typeScript as string | boolean;
+      this.personData.javaScript = data.javaScript as string | boolean;
+      this.personData.java = data.java as string | boolean;
+      this.personData.cSharp = data.cSharp as string | boolean;
+      this.personData.databases = data.databases as string[];
+      this.personData.otherJobExperience = data.otherJobExperience as string ;
+      this.personData.yearsOfExperience = data.yearsOfExperience as string;
+      this.personData.educationLevel = data.educationLevel as string;
+
+      this.showRes = false;
+
+    }
   }
 }
